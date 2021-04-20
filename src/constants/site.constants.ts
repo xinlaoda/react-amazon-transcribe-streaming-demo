@@ -47,6 +47,7 @@ const site: SiteConfig = {
 
       components: [{ componentName: 'StreamingView' }],
     },
+
   ],
 };
 

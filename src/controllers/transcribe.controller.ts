@@ -3,6 +3,15 @@ import {
   StartStreamTranscriptionCommand,
   StartStreamTranscriptionCommandOutput,
 } from '@aws-sdk/client-transcribe-streaming';
+import { 
+    TranslateClient, 
+    TranslateTextCommand,
+    TranslateTextCommandOutput,
+} from '@aws-sdk/client-translate';
+import {
+    PollyClient,
+} from '@aws-sdk/client-polly';
+import { getSynthesizeSpeechUrl } from '@aws-sdk/polly-request-presigner';
 import MicrophoneStream from 'microphone-stream';
 import { PassThrough } from 'stream';
 import { EventEmitter } from 'events';
@@ -24,6 +33,10 @@ class TranscribeController extends EventEmitter {
   private client?: TranscribeStreamingClient;
 
   private started: boolean;
+
+  private clientTranslate?: TranslateClient;
+
+  private clientPolly?: PollyClient;
 
   constructor() {
     super();
@@ -159,6 +172,84 @@ class TranscribeController extends EventEmitter {
       }
     }
   }
+
+  async translate(text: string[]) {
+    logger.info('translate started ...', text);
+    const willTranslate = text.join(' ');
+    logger.info('translate : ', willTranslate);
+
+    if (!this.transcribeConfig) {
+      throw new Error('translate config is not set');
+    }
+
+    // setup TranslateClient
+    // creating and setting up transcribe client
+    const config = {
+        region: this.transcribeConfig.region,
+        credentials: {
+            accessKeyId: this.transcribeConfig.accessKey,
+            secretAccessKey: this.transcribeConfig.secretAccessKey,
+        },
+    };
+    logger.info('setting up translate client with config', config);
+    this.clientTranslate = new TranslateClient(config);
+
+    const params = {
+        SourceLanguageCode: 'auto',
+        TargetLanguageCode: 'en',
+        Text: willTranslate,
+        TerminologyNames: [],
+    };
+    const command = new TranslateTextCommand(params);
+
+    const response = await this.clientTranslate.send(command);
+    this.onTranslate(response);
+
+  }
+
+  async onTranslate(reponse: TranslateTextCommandOutput) {
+      if (reponse.TranslatedText) {
+        this.emit('translated', reponse.TranslatedText);
+      }
+    
+  }
+
+  async polly_voice(text: string) {
+      logger.info('Start Polly ...');
+
+        if (!this.transcribeConfig) {
+        throw new Error('translate config is not set');
+        }
+
+        // setup TranslateClient
+        // creating and setting up transcribe client
+        const config = {
+            region: this.transcribeConfig.region,
+            credentials: {
+                accessKeyId: this.transcribeConfig.accessKey,
+                secretAccessKey: this.transcribeConfig.secretAccessKey,
+            },
+        };
+        logger.info('setup polly configure.');
+        this.clientPolly = new PollyClient(config);
+
+        const synthesizeSpeechParams = {
+            Engine: 'neural',
+            OutputFormat: 'mp3',
+            Text: text,
+            VoiceId: 'Kevin',
+        };
+        const audioURL = await getSynthesizeSpeechUrl({
+            client: this.clientPolly,
+            params: synthesizeSpeechParams,
+        });
+        logger.info('polly audio url', audioURL);
+
+        this.emit('pollyed', audioURL);
+
+  }  
+ 
+
 }
 
 export default TranscribeController;

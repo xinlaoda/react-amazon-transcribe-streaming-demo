@@ -3,8 +3,8 @@ const transcribe = {
   secretAccessKey: '',
 
   // default config
-  language: 'en-US',
-  region: 'eu-west-1',
+  language: 'zh-CN',
+  region: 'us-west-2',
   sampleRate: 44100,
 
   vocabularyName: '',
