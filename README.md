@@ -2,6 +2,8 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+This demo for transcribe, then translate, and then polly to voice it in Web.
+
 ## Available Scripts
 
 In the project directory, you can run:
