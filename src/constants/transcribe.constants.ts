@@ -8,6 +8,7 @@ const transcribe = {
   sampleRate: 44100,
 
   vocabularyName: '',
+
 };
 
 export default transcribe;

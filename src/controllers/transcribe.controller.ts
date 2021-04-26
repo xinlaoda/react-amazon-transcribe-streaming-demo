@@ -17,6 +17,8 @@ import { PassThrough } from 'stream';
 import { EventEmitter } from 'events';
 
 import transcribeConstants from '../constants/transcribe.constants';
+import translateConstants from '../constants/translate.constants';
+import pollyConstants from '../constants/polly.constants';
 import { streamAsyncIterator } from '../utils/helpers';
 import logger from '../utils/logger';
 import EncodePcmStream from './streams/EncodePcmStream';
@@ -30,6 +32,8 @@ class TranscribeController extends EventEmitter {
 
   private transcribeConfig?: typeof transcribeConstants;
 
+  private translateConfig?: typeof translateConstants;
+
   private client?: TranscribeStreamingClient;
 
   private started: boolean;
@@ -38,6 +42,8 @@ class TranscribeController extends EventEmitter {
 
   private clientPolly?: PollyClient;
 
+  private voiceId: string;
+
   constructor() {
     super();
 
@@ -45,14 +51,17 @@ class TranscribeController extends EventEmitter {
     this.rawMediaStream = null;
     this.audioPayloadStream = null;
     this.started = false;
+    this.voiceId = 'kevin';
   }
 
   hasConfig() {
     return !!this.transcribeConfig;
   }
 
-  setConfig(transcribeConfig: typeof transcribeConstants) {
+  setConfig(transcribeConfig: typeof transcribeConstants, 
+        translateConfig: typeof translateConstants) {
     this.transcribeConfig = transcribeConfig;
+    this.translateConfig = translateConfig;
   }
 
   validateConfig() {
@@ -68,11 +77,15 @@ class TranscribeController extends EventEmitter {
 
   async init() {
     this.started = true;
-    if (!this.transcribeConfig) {
+    if (!this.transcribeConfig ) {
       throw new Error('transcribe config is not set');
+    }
+    if (!this.translateConfig ) {
+      throw new Error('translate config is not set');
     }
 
     logger.info('transcribe config', this.transcribeConfig);
+    logger.info('translate config', this.translateConfig);
     this.validateConfig();
 
     // setting up microphone stream
@@ -173,6 +186,7 @@ class TranscribeController extends EventEmitter {
     }
   }
 
+  
   async translate(text: string[]) {
     logger.info('translate started ...', text);
     const willTranslate = text.join(' ');
@@ -196,10 +210,11 @@ class TranscribeController extends EventEmitter {
 
     const params = {
         SourceLanguageCode: 'auto',
-        TargetLanguageCode: 'en',
+        TargetLanguageCode: this.translateConfig?.selectedTarget,
         Text: willTranslate,
         TerminologyNames: [],
     };
+    logger.info('translate params: ', params);
     const command = new TranslateTextCommand(params);
 
     const response = await this.clientTranslate.send(command);
@@ -209,6 +224,7 @@ class TranscribeController extends EventEmitter {
 
   async onTranslate(reponse: TranslateTextCommandOutput) {
       if (reponse.TranslatedText) {
+        logger.info('translated done: ', reponse.TranslatedText);
         this.emit('translated', reponse.TranslatedText);
       }
     
@@ -232,12 +248,18 @@ class TranscribeController extends EventEmitter {
         };
         logger.info('setup polly configure.');
         this.clientPolly = new PollyClient(config);
-
+        
+        if (this.translateConfig?.selectedTarget) {
+            const voiceMap : {[key: string]: string} 
+                = pollyConstants.PollyVoiceId;
+            this.voiceId = voiceMap[this.translateConfig.selectedTarget];
+        }
+        logger.info('VoiceId: ', this.voiceId);
         const synthesizeSpeechParams = {
-            Engine: 'neural',
+            
             OutputFormat: 'mp3',
             Text: text,
-            VoiceId: 'Kevin',
+            VoiceId: this.voiceId,
         };
         const audioURL = await getSynthesizeSpeechUrl({
             client: this.clientPolly,

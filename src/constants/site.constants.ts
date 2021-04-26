@@ -14,7 +14,7 @@ const site: SiteConfig = {
       layoutName: 'Dynamic',
 
       wrap: 'Box',
-      heading: 'Amazon Transcribe Demo!',
+      heading: 'Amazon 在线实时传译机器人',
 
       components: [],
     },
@@ -29,11 +29,11 @@ const site: SiteConfig = {
       components: [
         {
           componentName: 'DynamicTranscribeForm',
-          fields: ['Access Key', 'Secret Access Key'],
+          fields: ['language', 'region'],
         },
         {
-          componentName: 'DynamicTranscribeForm',
-          fields: ['language', 'region'],
+          componentName: 'DynamicTranslateForm',
+          fields: ['选择翻译语言'],
         },
       ],
     },
@@ -43,7 +43,7 @@ const site: SiteConfig = {
       layoutName: 'Dynamic',
 
       wrap: 'Box',
-      heading: 'Streaming',
+      heading: '实时传译',
 
       components: [{ componentName: 'StreamingView' }],
     },

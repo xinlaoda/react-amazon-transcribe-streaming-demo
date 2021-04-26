@@ -19,9 +19,11 @@
     "isready": "npm run format && npm run lint && npm run build"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.13.1",
     "@aws-sdk/client-polly": "^3.13.0",
     "@aws-sdk/client-transcribe-streaming": "^3.3.0",
     "@aws-sdk/client-translate": "^3.13.0",
+    "@aws-sdk/credential-provider-cognito-identity": "^3.13.1",
     "@aws-sdk/polly-request-presigner": "^3.13.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -67,6 +69,7 @@
     ]
   },
   "devDependencies": {
+    "@aws-sdk/types": "^3.13.1",
     "@types/react-router-dom": "^5.1.6",
     "@types/react-scroll": "^1.8.2",
     "@types/react-vertical-timeline-component": "^3.0.0",

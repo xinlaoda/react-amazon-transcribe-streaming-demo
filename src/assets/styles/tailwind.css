@@ -54,3 +54,26 @@ h3 {
   box-shadow: 0 0 0 4px black, inset 0 2px 0 rgba(0, 0, 0, 0.08),
     0 3px 0 4px rgba(0, 0, 0, 0.05);
 }
+
+.header-section {
+  opacity: 0.8;
+  background-color: rgb(32, 41, 53);
+}
+
+.config-manager-section {
+  opacity: 0.8;
+  background-color: rgb(32, 41, 53);
+}
+
+.streaming-section {
+  opacity: 0.8;
+  background-color: rgb(32, 41, 53);
+}
+
+.bg-mycolor {
+  background-color: rgb(32, 41, 53);
+  background-image: url('../images/bkg.jpeg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -moz-background-size: 100% 100%;
+}

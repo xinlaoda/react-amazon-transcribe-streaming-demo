@@ -19,7 +19,7 @@ const FormInput: React.FC<{
   const formattedName = camelCase(name);
 
   return (
-    <div className="flex flex-col text-black items-start">
+    <div className="flex flex-col text-white items-start">
       <label className="capitalize font-bold" htmlFor={formattedName}>
         {name}
       </label>

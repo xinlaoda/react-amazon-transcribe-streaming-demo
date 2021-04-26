@@ -14,7 +14,7 @@ const Main: React.FC = () => {
 
 function App() {
   return (
-    <div className="flex mx-auto min-w-0 h-screen">
+    <div className="flex mx-auto min-w-0 h-screen bg-mycolor">
       <StoreProviders>
         <Router>
           <Switch>
