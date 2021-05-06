@@ -11,7 +11,7 @@ const TextBox: React.FC<{
       id={name}
       name={name}
       placeholder={placeholder}
-      rows={10}
+      rows={15}
       value={value}
       readOnly={true}
     />

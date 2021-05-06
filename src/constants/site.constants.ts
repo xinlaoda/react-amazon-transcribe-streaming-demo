@@ -29,7 +29,7 @@ const site: SiteConfig = {
       components: [
         {
           componentName: 'DynamicTranscribeForm',
-          fields: ['language', 'region'],
+          fields: ['language'],
         },
         {
           componentName: 'DynamicTranslateForm',
