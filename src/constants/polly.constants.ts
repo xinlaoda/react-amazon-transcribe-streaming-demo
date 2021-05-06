@@ -6,6 +6,7 @@ const polly = {
       'de': 'Marlene',
       'pt': 'Vitoria',
       'es': 'Penelope',
+      'ar': 'Zeina',
   },
 };
 

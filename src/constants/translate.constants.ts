@@ -6,6 +6,7 @@ const translate = {
       '德语': 'de',
       '葡萄牙语': 'pt',
       '西班牙语': 'es',
+      '阿拉伯语': 'ar',
   },
   selectedTarget: 'en',
 };
