@@ -7,6 +7,10 @@ const polly = {
       'pt': 'Vitoria',
       'es': 'Penelope',
       'ar': 'Zeina',
+      'nl': 'Lotte',
+      'hi': 'Aditi',
+      'it': 'Giorgio',
+      'ja': 'Mizuki',
   },
 };
 
