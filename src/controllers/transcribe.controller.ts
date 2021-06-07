@@ -96,6 +96,7 @@ class TranscribeController extends EventEmitter {
       video: false,
       audio: {
         sampleRate: this.transcribeConfig.sampleRate,
+          noiseSuppression: true,
       },
     });
     await this.audioStream.setStream(this.rawMediaStream);
@@ -127,32 +128,41 @@ class TranscribeController extends EventEmitter {
       MediaSampleRateHertz: this.transcribeConfig.sampleRate,
       AudioStream: this.audioGenerator.bind(this)(),
     });
+      try {
+          const response = await this.client.send(command);
+          this.onStart(response);
+      } catch (error) {
+          logger.error('Failed to send transcribe command.', error);
+      }
 
-    const response = await this.client.send(command);
-    this.onStart(response);
   }
 
   async onStart(response: StartStreamTranscriptionCommandOutput) {
     logger.info('recognition started', response);
 
     if (response.TranscriptResultStream) {
-      for await (const event of response.TranscriptResultStream) {
-        // Get multiple possible results
-        const results = event.TranscriptEvent?.Transcript?.Results;
-        // Print all the possible transcripts
-        if (results && results.length > 0) {
-          const [result] = results;
-          const final = !result.IsPartial;
-          const alternatives = result.Alternatives;
+        try {
+            for await (const event of response.TranscriptResultStream) {
+                // Get multiple possible results
+                const results = event.TranscriptEvent?.Transcript?.Results;
+                // Print all the possible transcripts
+                if (results && results.length > 0) {
+                    const [result] = results;
+                    const final = !result.IsPartial;
+                    const alternatives = result.Alternatives;
 
-          if (alternatives && alternatives.length > 0) {
-            const [alternative] = alternatives;
-            const text = alternative.Transcript;
-
-            this.emit('recognized', { text, final });
+                  if (alternatives && alternatives.length > 0) {
+                      const [alternative] = alternatives;
+                      const text = alternative.Transcript;
+                      this.emit('recognized', { text, final });
+                  }
+              }
           }
+        } catch (error) {
+            logger.error('TranscriptResultSteam failed.', error);
         }
-      }
+
+
     }
   }
 

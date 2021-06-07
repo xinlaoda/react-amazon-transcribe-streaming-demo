@@ -62,7 +62,7 @@ const StreamingView: React.FC<{
         await transcribeController.init().catch((error: Error) => {
           logger.error(error);
           setStarted(false);
-          setTranslatedText('');
+          // setTranslatedText('');
         });
       } else {
         logger.info('stopping transcription');
@@ -75,7 +75,7 @@ const StreamingView: React.FC<{
         })();
       }
     })();
-  }, [started, transcribeController, translatedText, isPlaying]);
+  }, [started]);
 
   useEffect(() => {
       (async () => {
@@ -99,6 +99,15 @@ const StreamingView: React.FC<{
           transcribeController.removeListener('translated', displayTransletedText);
       };
   }, [transcribeController]);
+
+  useEffect(() => {
+    (async () => {
+      if (isPlaying) {
+        logger.info('start polly playing.');
+        await transcribeController.polly_voice(translatedText);
+      }
+    })();
+  }, [isPlaying, transcribeController, translatedText]);
 
   useEffect(() => {
       const playAudio = (playURL: string) => {
